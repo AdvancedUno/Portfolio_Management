@@ -35,6 +35,17 @@ print(equal_weights)
 
 def effective_number_of_bets(weights, cov_matrix):
 
+    """
+    Calculate the Effective Number of Bets (ENB) of portfolio.
+
+    Param:
+        weights : Portfolio weights
+        cov_matrix : Covariance matrix
+
+    Returns:
+        ENB value
+    """   
+
 
     # Diagonal matrix of standard deviations
     D = np.diag(np.sqrt(np.diag(cov_matrix)))
@@ -73,6 +84,17 @@ def effective_number_of_bets(weights, cov_matrix):
 
 
 def optimize_enb(cov_matrix, initial_weights):
+
+    """
+    Optimize the Effective Number of Bets (ENB).
+
+    Param:
+        cov_matrix : Covariance matrix
+        initial_weights : Initial weights
+
+    Returns:
+        Optimized weights.
+    """
 
     # Constraints are sum of weights need to be 1, weights >= 0
     constraints = (
