@@ -5,33 +5,35 @@ from scipy.optimize import minimize
 
 # Test cases for the paper
 # For some reason the testMatrix3 is returning different output than expacted.
-testMatrix1 = np.array([
-    [0.01, -0.016, 0, 0],
-    [-0.016, 0.04, 0, 0],
-    [0, 0, 0.09, 0.06],
-    [0, 0, 0.06, 0.16]
-])
-
-testMatrix2 = np.array([
+test_matrix1 = np.array([
     [0.01, 0.016, 0, 0],
     [0.016, 0.04, 0, 0],
     [0, 0, 0.09, -0.06],
     [0, 0, -0.06, 0.16]
 ])
 
-
-testMatrix3 = np.array([
+test_matrix2 = np.array([
     [0.01, -0.016, 0, 0],
     [-0.016, 0.04, 0, 0],
-    [0, 0, 0.09, -0.06],
-    [0, 0, -0.06, 0.16]
+    [0, 0, 0.09, 0.06],
+    [0, 0, 0.06, 0.16]
 ])
 
 
-# Equal weights in the beginning
-equal_weights = np.ones(testMatrix1.shape[1]) / testMatrix1.shape[1] 
+test_matrix3 = np.array([
+    [0.01, 0.016, 0, 0],
+    [0.016, 0.04, 0, 0],
+    [0, 0, 0.09, -0.108],
+    [0, 0, -0.108, 0.16]
+])
 
-print(equal_weights)
+
+testMat = test_matrix1
+
+# Equal weights in the beginning
+equal_weights = np.ones(testMat.shape[1]) / testMat.shape[1] 
+
+
 
 def effective_number_of_bets(weights, cov_matrix):
 
@@ -96,10 +98,10 @@ def optimize_enb(cov_matrix, initial_weights):
         Optimized weights.
     """
 
-    # Constraints are sum of weights need to be 1, weights >= 0
+    # Constraints are sum of weights need to be 1 and all the weights >= 0
     constraints = (
-        {"type": "eq", "fun": lambda x: np.sum(x) - 1},  # Sum of weights need to be 1
-        {"type": "ineq", "fun": lambda x: x}  # Weights >= 0
+        {"type": "eq", "fun": lambda x: np.sum(x) - 1}, 
+        {"type": "ineq", "fun": lambda x: x}  
     )
 
     # Objective function is to maximize ENB wich is minimizing ENB
@@ -114,9 +116,15 @@ def optimize_enb(cov_matrix, initial_weights):
 
 
 
-optimized_enb_weights = optimize_enb(testMatrix1, equal_weights)
-print("Optimized ENB Weights:", optimized_enb_weights)
+optimized_enb_weights = optimize_enb(test_matrix1, equal_weights)
+print("Optimized ENB Weights Test 1 :", np.round(optimized_enb_weights,3))
 
 
+optimized_enb_weights = optimize_enb(test_matrix2, equal_weights)
+print("Optimized ENB Weights Test 2 :", np.round(optimized_enb_weights,3))
+
+
+optimized_enb_weights = optimize_enb(test_matrix3, equal_weights)
+print("Optimized ENB Weights Test 3 :", np.round(optimized_enb_weights,3))
 
 
