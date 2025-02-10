@@ -49,7 +49,7 @@ def erc(weights, cov_matrix):
     marginal_risk = cov_matrix @ weights
 
     # Risk contributions
-    risk_contributions = weights * marginal_risk / portfolio_variance
+    risk_contributions = weights * marginal_risk / np.sqrt(portfolio_variance)
 
     # Objective: minimize the sum of squared differences in risk contributions
     target_risk_contribution = 1 / len(weights)  # Equal risk contribution target
@@ -78,7 +78,7 @@ def optimize_erc(cov_matrix, initial_weights):
     def obj(x):
         return erc(x, cov_matrix)
 
-    # Optimize
+    # Optimize using SLsSQP like enb
     result = minimize(obj, initial_weights, method="SLSQP", constraints=constraints)
 
     return result.x

@@ -49,16 +49,16 @@ def effective_number_of_bets(weights, cov_matrix):
     """   
 
 
-    # Diagonal matrix of standard deviations
+    # Diagonal matrix 
     D = np.diag(np.sqrt(np.diag(cov_matrix)))
     invD = np.diag(1 / np.diag(D))  
 
-    # Eigen dcomposition of the covariance matrix
+    # Eigen dcomposition for the covariance matrix
     eigenvalues, P = np.linalg.eig(cov_matrix)
     Lambda = np.diag(np.sqrt(eigenvalues))
     LambdaInv = np.diag(1 / np.sqrt(eigenvalues))
 
-    # Singular Value Decomposition
+    # DO SVD
     Transicion = Lambda @ P.T @ D
     U, S_diag, Vt = np.linalg.svd(Transicion)
     S = np.diag(S_diag)
@@ -71,10 +71,10 @@ def effective_number_of_bets(weights, cov_matrix):
     invAw = invA @ weights
 
     # Calculate portfolio variance
-    wSIGMAw = weights.T @ cov_matrix @ weights
+    sig = weights.T @ cov_matrix @ weights
 
     # Calculate pk for ENB calculation
-    pk = np.diag(cov_matrix) * (invAw ** 2) / wSIGMAw
+    pk = np.diag(cov_matrix) * (invAw ** 2) / sig
 
     # Calculate ENB
     lnpk = np.log(pk)
