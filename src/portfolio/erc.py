@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.optimize import minimize
+from scipy.optimize import differential_evolution
 
 # Example covariance matrices for testing
 
@@ -44,18 +45,30 @@ def erc(weights, cov_matrix):
     """
     # Portfolio variance
     portfolio_variance = weights.T @ cov_matrix @ weights
+    portfolio_volatility = np.sqrt(portfolio_variance)
+
+    # print("portfolio_variance : ", portfolio_variance)
+    # print("portfolio_volatility : ", portfolio_volatility)
 
     # Marginal risk contributions
     marginal_risk = cov_matrix @ weights
 
+    # print("marginal_risk : ", marginal_risk)
+
+    
+
     # Risk contributions
-    risk_contributions = weights * marginal_risk / np.sqrt(portfolio_variance)
+    risk_contributions = weights * marginal_risk / portfolio_volatility 
+    percentage_contributions = risk_contributions / portfolio_volatility
+    # print("Risk Contributions:", risk_contributions.round(3))
 
     # Objective: minimize the sum of squared differences in risk contributions
-    target_risk_contribution = 1 / len(weights)  # Equal risk contribution target
-    obj_value = np.sum((risk_contributions - target_risk_contribution) ** 2)
+    target= 1 / len(weights)  # Equal risk contribution target
+    obj_value = np.sum((percentage_contributions - target) ** 2)
+
 
     return obj_value
+
 
 def optimize_erc(cov_matrix, initial_weights):
     """
@@ -68,6 +81,8 @@ def optimize_erc(cov_matrix, initial_weights):
     Returns:
         Optimized weights.
     """
+
+
     # Constraints are the sum of weights add up to 1 and all the weights >= 0
     constraints = (
         {"type": "eq", "fun": lambda x: np.sum(x) - 1},
@@ -79,17 +94,60 @@ def optimize_erc(cov_matrix, initial_weights):
         return erc(x, cov_matrix)
 
     # Optimize using SLsSQP like enb
-    result = minimize(obj, initial_weights, method="SLSQP", constraints=constraints)
+    result = minimize(obj, initial_weights, method="SLSQP", constraints=constraints, tol=1e-10, )
 
     return result.x
 
+def optimize_erc_global(cov_matrix, n_restarts=200):
+    """
+    Optimizes ERC portfolio using a multi-start b/c local min
+    
+    Parameters:
+        The covariance matrix of asset returns.
+
+    Returns:
+       Optimized ERC weights
+    """
+    
+    best_weights = None
+    best_obj = float("inf") 
+    
+    # Constraints are the sum of weights add up to 1 and all the weights >= 0
+    constraints = (
+        {"type": "eq", "fun": lambda x: np.sum(x) - 1},
+        {"type": "ineq", "fun": lambda x: x} 
+    )
 
 
-optimized_erc_weights = optimize_erc(test_matrix1, equal_weights)
+    for _ in range(n_restarts):
+        # Generate random valid initial guess (Dirichlet distribution ensures ∑weights = 1)
+        x0 = np.random.dirichlet(np.ones(cov_matrix.shape[1]))
+        
+        result = minimize(
+            erc,
+            x0, 
+            args=(cov_matrix), 
+            method="SLSQP",  
+
+            constraints=constraints
+        )
+
+        # Update best solution
+        if result.fun < best_obj and result.success:
+            best_obj = result.fun
+            best_weights = result.x
+
+    return best_weights
+
+
+optimized_erc_weights = optimize_erc_global(test_matrix1)
+#optimized_erc_weights = optimize_erc(test_matrix1, equal_weights)
 print("Optimized ERC Weights Test 1 :", np.round(optimized_erc_weights,3))
 
-optimized_erc_weights = optimize_erc(test_matrix2, equal_weights)
+optimized_erc_weights = optimize_erc_global(test_matrix2)
+#optimized_erc_weights = optimize_erc(test_matrix2, equal_weights)
 print("Optimized ERC Weights Test 2 :", np.round(optimized_erc_weights,3))
 
-optimized_erc_weights = optimize_erc(test_matrix3, equal_weights)
+optimized_erc_weights = optimize_erc_global(test_matrix3)
+#optimized_erc_weights = optimize_erc(test_matrix3, equal_weights)
 print("Optimized ERC Weights Test 3 :", np.round(optimized_erc_weights,3))

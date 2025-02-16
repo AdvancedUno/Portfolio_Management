@@ -15,7 +15,7 @@ def turnover(weights_matrix):
     return turnover_sum / (T - 1)  # Normalize over time periods
 
 
-simulated_returns = np.random.normal(0.08, 0.15, 100)  # 100 periods of random returns
+simulated_returns = np.random.normal(0.08, 0.15, 100)  
 
 simulated_weights = np.random.dirichlet(np.ones(4), size=100)
 
