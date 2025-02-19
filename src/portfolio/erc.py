@@ -120,7 +120,7 @@ def optimize_erc_global(cov_matrix, n_restarts=200):
 
 
     for _ in range(n_restarts):
-        # Generate random valid initial guess (Dirichlet distribution ensures ∑weights = 1)
+        # Generate random intial weights
         x0 = np.random.dirichlet(np.ones(cov_matrix.shape[1]))
         
         result = minimize(
@@ -128,12 +128,11 @@ def optimize_erc_global(cov_matrix, n_restarts=200):
             x0, 
             args=(cov_matrix), 
             method="SLSQP",  
-
             constraints=constraints
         )
 
-        # Update best solution
-        if result.fun < best_obj and result.success:
+        # Get best solution
+        if result.fun < best_obj:
             best_obj = result.fun
             best_weights = result.x
 
