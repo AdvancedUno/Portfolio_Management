@@ -11,12 +11,12 @@ def sharpe_ratio(returns, risk_free_rate=0.02):
     Returns:
         Sharpe Ratio value
     """
-    mu_h = np.mean(returns) - risk_free_rate
-    sigma_h = np.std(returns, ddof=1)  # Use sample standard deviation
+    mu = np.mean(returns) - risk_free_rate
+    sigma = np.std(returns, ddof=1) 
 
-    return mu_h / sigma_h
+    return mu / sigma
 
-simulated_returns = np.random.normal(0.08, 0.15, 100)  
+test_returns = np.random.normal(0.08, 0.15, 100)  
 
-SR_value = sharpe_ratio(simulated_returns)
-print(f"Sharpe Ratio: {SR_value:.4f}")
+sharpe_ratio_value = sharpe_ratio(test_returns)
+print(f"Sharpe Ratio: ",  np.round(sharpe_ratio_value,3))

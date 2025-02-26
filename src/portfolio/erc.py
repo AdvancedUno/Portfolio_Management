@@ -47,20 +47,13 @@ def erc(weights, cov_matrix):
     portfolio_variance = weights.T @ cov_matrix @ weights
     portfolio_volatility = np.sqrt(portfolio_variance)
 
-    # print("portfolio_variance : ", portfolio_variance)
-    # print("portfolio_volatility : ", portfolio_volatility)
-
     # Marginal risk contributions
     marginal_risk = cov_matrix @ weights
 
-    # print("marginal_risk : ", marginal_risk)
-
-    
 
     # Risk contributions
     risk_contributions = weights * marginal_risk / portfolio_volatility 
     percentage_contributions = risk_contributions / portfolio_volatility
-    # print("Risk Contributions:", risk_contributions.round(3))
 
     # Objective: minimize the sum of squared differences in risk contributions
     target= 1 / len(weights)  # Equal risk contribution target
