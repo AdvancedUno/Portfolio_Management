@@ -1,7 +1,5 @@
 # 📊 Portfolio Management and Diversification Strategies
 
-![Portfolio Optimization](https://user-images.githubusercontent.com/yourimagepath/portfolio-banner.png)
-
 ## 📝 Overview
 This research project explores **portfolio diversification strategies**, focusing on four key methods:
 - **Equal-Weight Portfolio (ENB)** – Each asset receives the same weight.
